@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+	<head>
+        <title>Stock Market Simulator</title>
+
+		<!-- Importing Materialize CSS Unminified -->
+		<link rel="stylesheet" href="..\styling\materialize.css">
+
+		<!-- Adjusting CSS -->
+		<link rel="stylesheet" href="styling\layout.css">
+	</head>
+
+	<body>
+		<!-- Settings -->
+        <div class="buttons">
+            <div onclick="runOrStopChart()" class="button">
+                <span id="runningStatus">Run</span>
+            </div>
+
+            Speed
+            <input type="range" min="0" max="2500" value="500" class="slider" id="speedSlider">
+            <span id="speedDisplay">500ms</span>
+
+			Commission
+            <input type="range" min="0" max="100" value="10" class="slider" id="commissionSlider">
+            <span id="commissionDisplay">0.10%</span>
+        </div>
+
+		<!-- Financial Status -->
+		<div class="buttons">
+			Cash
+			<span id="currentCash">$1000000</span>
+
+			Holdings
+			<span id="holdings">0</span>
+
+			Net Worth
+			<span id="netWorth">$1000000</span>
+		</div>
+
+		<!-- Buy and Sell -->
+		<div class="buttons">
+            <div onclick="buyAmount()" class="button">Buy</div>
+			<input type="range" min="1" max="100000000" value="1000000" class="slider" id="buyAmountSlider">
+			<span id="buyAmountDisplay">$10000 1%</span>
+
+			<div onclick="sellAmount()" class="button">Sell</div>
+			<input type="range" min="1" max="100000000" value="1000000" class="slider" id="sellAmountSlider">
+            <span id="sellAmountDisplay">$10000 1%</span>
+		</div>
+
+		<!-- Messages to User -->
+		<div id="economicStatus" style="text-align: center"></div>
+
+		<!-- Stock Price Chart -->
+		<div id="chartContainer" style="height: 80vh; width: 100%;"></div>
+
+		<!-- Importing Chart -->
+		<script src="styling\canvas.js"></script>
+		<!-- Generic Functions -->
+		<script src="functions\reusable.js"></script>
+		<!-- Settings and Constants For Game -->
+		<script src="functions\settings.js"></script>
+		<!-- Importing General Chart Functions -->
+		<script src="functions\chart.js"></script>
+		<!-- Importing User Interface -->
+		<script src="functions\userInterface.js"></script>
+		<!-- Importing Chart Into Stock Chart -->
+		<script src="functions\stock.js"></script>
+		<!-- Starting Game -->
+		<script src="functions\game.js"></script>
+		<!-- Tests - Not For Production Build -->
+		<script src="tests\tests.js"></script>
+		<script src="tests\test_reusable.js"></script>
+	</body>
+</html>

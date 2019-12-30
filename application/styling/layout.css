@@ -1,0 +1,30 @@
+.buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.buttons > * {
+    margin: 10px;
+    opacity: 0.85;
+}
+
+.button {
+    cursor: pointer;
+}
+
+.button:hover {
+    opacity: 1;
+}
+
+.slider {
+    opacity: 0.85;
+    -webkit-appearance: none;
+    width: 125px;
+    height: 15px;
+}
+
+.slider:hover {
+    opacity: 1;
+}
