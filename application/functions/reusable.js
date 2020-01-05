@@ -9,5 +9,140 @@ function randomNumber() {
             number = number * 0.99;
         }
     }
+
     return number;
+}
+
+// Returns the user's cash total
+function cash() {
+    return financialStatus.cash;
+}
+
+// Updates cash
+function updateCash(amount) {
+    chartStatus.cash = amount;
+}
+
+// Add amount to cash
+function addCash(amount) {
+    financialStatus.cash += amount;
+}
+
+// Returns the user's holdings
+function holdings() {
+    return financialStatus.holdings;
+}
+
+// Updates holdings
+function updateHoldings(amount) {
+    financialStatus.holdings = amount;
+}
+
+
+// Add amount to holdings
+function addHoldings(amount) {
+    financialStatus.holdings += amount;
+}
+
+// Returns the user's holdings value
+// Always returns a positive number
+// If short, return short amount and if long, return long amount
+function holdingsValue() {
+    return Math.abs(holdings()) * currentPrice();
+}
+
+// Returns the commission
+function commission() {
+    return 1 - document.getElementById("commissionSlider").value / 100;
+}
+
+// Returns buy amount
+function buy() {
+    return document.getElementById("buyAmountSlider").value;
+}
+
+// Returns sell amount
+function sell() {
+    return document.getElementById("sellAmountSlider").value;
+}
+
+// Returns the current time of the stock
+function currentTime() {
+    return chart.options.data[0].dataPoints.length;
+}
+
+// Returns the current price of the stock
+function currentPrice() {
+    return chart.options.data[0].dataPoints[currentTime() - 1].y;
+}
+
+// Returns the user's net worth
+function netWorth() {
+    if (holdings() > 0) {
+        // User is currently in a short position
+        return cash() + holdingsValue();
+    } else if (holdings() < 0) {
+        // User is currently in a long position
+        return cash() - holdingsValue();
+    } else {
+        // User is currently in a net 0 position
+        return cash();
+    }
+}
+
+// Returns the amount bought at the current point
+function amountBoughtAtPoint() {
+    return chartStatus.amountBoughtAtPoint;
+}
+
+// Update amount bought at point
+function updateAmountBoughtAtPoint(amount) {
+    chartStatus.amountBoughtAtPoint = amount;
+}
+
+// Add amount to amount bought at point
+function addAmountBoughtAtPoint(amount) {
+    chartStatus.amountBoughtAtPoint += amount;
+}
+
+// Obtain speed value
+function speed() {
+    return document.getElementById("speedSlider").value
+}
+
+// Returns the chart's running status
+function running() {
+    return chartStatus.running;
+}
+
+// Update the chart's running status
+function updateRunning(boolean) {
+    chartStatus.running = boolean;
+}
+
+// Maximum short finder
+function short() {
+    if (holdings() > 0) {
+        // There are holdings to sell, cash obtained from sold holdings and original cash
+        return cash() + holdingsValue() + holdingsValue() * commission();
+    } else if (holdings() < 0) {
+        // Currently in a short
+        return cash() - holdingsValue() * 2;
+    } else {
+        // Currently in a net 0 position
+        return cash();
+    }
+}
+
+// Sends a message to the user
+function notifyUser(message) {
+    document.getElementById("economicStatus").innerHTML = message;
+    removeEconomicStatus();
+}
+
+// Removes economic status
+function removeEconomicStatus() {
+    setTimeout(function() {
+        document.getElementById("economicStatus").innerHTML = "";
+    }, 5000);
 }

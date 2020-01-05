@@ -18,42 +18,42 @@
             </div>
 
             Speed
-            <input type="range" min="0" max="2500" value="500" class="slider" id="speedSlider">
-            <span id="speedDisplay">500ms</span>
+            <input type="range" class="slider" id="speedSlider">
+            <span id="speedDisplay"></span>
 
 			Commission
-            <input type="range" min="0" max="100" value="10" class="slider" id="commissionSlider">
-            <span id="commissionDisplay">0.10%</span>
+            <input type="range" class="slider" id="commissionSlider">
+            <span id="commissionDisplay"></span>
         </div>
 
 		<!-- Financial Status -->
 		<div class="buttons">
 			Cash
-			<span id="currentCash">$1000000</span>
+			<span id="cash"></span>
 
 			Holdings
-			<span id="holdings">0</span>
+			<span id="holdings"></span>
 
 			Net Worth
-			<span id="netWorth">$1000000</span>
+			<span id="netWorth"></span>
 		</div>
 
 		<!-- Buy and Sell -->
 		<div class="buttons">
             <div onclick="buySlider()" class="button">Buy</div>
-			<input type="range" min="1" max="100000000" value="1000000" class="slider" id="buyAmountSlider">
-			<span id="buyAmountDisplay">$10000 1%</span>
+			<input type="range" class="slider" id="buyAmountSlider">
+			<span id="buyAmountDisplay"></span>
 
 			<div onclick="sellSlider()" class="button">Sell</div>
-			<input type="range" min="1" max="100000000" value="1000000" class="slider" id="sellAmountSlider">
-            <span id="sellAmountDisplay">$10000 1%</span>
+			<input type="range" class="slider" id="sellAmountSlider">
+            <span id="sellAmountDisplay"></span>
 		</div>
 
 		<!-- Messages to User -->
 		<div id="economicStatus" style="text-align: center"></div>
 
 		<!-- Stock Price Chart -->
-		<div id="chartContainer" style="height: 80vh; width: 100%;"></div>
+		<div id="chartContainer" style="height: 75vh; width: 100%;"></div>
 
 		<!-- Importing Chart -->
 		<script src="styling\canvas.js"></script>

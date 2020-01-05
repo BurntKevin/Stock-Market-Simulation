@@ -1,14 +1,16 @@
 // Financial Status
-var currentCash = 1000000;
-var holdings = 0;
-var netWorth = 1000000;
+financialStatus = {
+    cash: 1000000,
+    holdings: 0
+}
 
-// Chart
-var amountBoughtAtPoint = 0;
-var running = false;
-var time = 0;
-var price = 100;
-var dps = [];
+// Chart Status
+chartStatus = {
+    amountBoughtAtPoint: 0,
+    running: "false",
+    dps: [],
+    timer: 0
+}
 var chart = new CanvasJS.Chart("chartContainer", {
     zoomEnabled: true,
     axisY: {
@@ -17,6 +19,6 @@ var chart = new CanvasJS.Chart("chartContainer", {
     data: [{
         type: "spline",
         markerSize: 10,
-        dataPoints: dps
+        dataPoints: chartStatus.dps
     }]
 });
