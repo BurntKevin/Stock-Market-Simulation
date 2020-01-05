@@ -14,7 +14,7 @@ function updateChart(count) {
         // Giving chart new point
         price = price * randomNumber();
         // If the new price is below $0.01, the stock is delisted.
-        if (price <= 0.01) {
+        if (price < 0.01) {
             price = 0;
         }
         // Adding price point
@@ -54,10 +54,10 @@ function updateChart(count) {
     }
 
     // Resetting variables
+    readjustMargin();
     amountBoughtAtPoint = 0;
 
     // Updating financial status
-    shortMarginAdjust();
     updateCurrentCash;
     updateHoldings();
     updateNetWorth();
@@ -68,23 +68,30 @@ function updateChart(count) {
     updateSellSlider();
 };
 
+// Buy Button Slider
+function buySlider() {
+    var amount = document.getElementById("buyAmountSlider").value / 100;
+
+    buyAmount(amount);
+}
+
 // Buy Button
 // 1. Check if user is able to purchase the amount specified
 // 2. If you have sell trades currently, close them out
 // 3. Buy more shares if required
-function buyAmount() {
-    var amount = document.getElementById("buyAmountSlider").value / 100;
+function buyAmount(amount) {
     var commission = 1 - document.getElementById("commissionSlider").value / 10000;
     var length = chart.options.data[0].dataPoints.length;
-    var holdingValue = holdings * chart.options.data[0].dataPoints[length-1].y;
+    var price = chart.options.data[0].dataPoints[length-1].y;
+    var holdingValue = Math.abs(holdings * price);
 
     if (netWorth == 0) {
         // User is bankrupt
         document.getElementById("economicStatus").innerHTML = "You are bankrupt!";
-    } else if (currentCash < amount && holdings >= 0) {
+    } else if (holdings >= 0 && currentCash < amount) {
         // Requested purchase amount exceeds current capital - long
         document.getElementById("economicStatus").innerHTML = "Transaction declined! Lack of funds.";
-    } else if (-holdingValue + currentCash < amount && holdings < 0) {
+    } else if (holdings < 0 && holdingValue + currentCash < amount) {
         // Requested purchase amount exceeds current capital - short
         document.getElementById("economicStatus").innerHTML = "Transaction declined! Lack of funds.";
     } else {
@@ -92,22 +99,22 @@ function buyAmount() {
         amountBoughtAtPoint += parseFloat(amount) * commission;
         if (holdings >= 0) {
             // Buying more holdings
-            holdings = parseFloat(holdings) + (amount / chart.options.data[0].dataPoints[length-1].y) * commission;
+            holdings = parseFloat(holdings) + (amount / price) * commission;
             currentCash = currentCash - amount;
-        } else if (-holdingValue >= amount) {
+        } else if (holdingValue >= amount) {
             // Only requires closing out short positions
-            holdingValue = holdingValue + parseFloat(amount);
-            holdings = holdingValue / chart.options.data[0].dataPoints[length-1].y;
+            holdingValue = holdingValue - parseFloat(amount);
+            holdings = holdingValue / price;
             currentCash += parseFloat(amount) * commission;
         } else {
             // Get back margin from short position
-            currentCash -= holdingValue * commission;
+            currentCash += holdingValue * commission;
             holdings = 0;
-            amount = parseFloat(amount) + holdingValue;
+            amount = parseFloat(amount) - holdingValue;
 
             // Buyback and purchase with cash
             currentCash -= amount;
-            holdings = (amount * commission) / chart.options.data[0].dataPoints[length-1].y;
+            holdings = (amount * commission) / price;
         }
 
         // Updating financial status
@@ -122,12 +129,18 @@ function buyAmount() {
     }
 }
 
-// Sell Button
+// Sell amount slider
+function sellSlider() {
+    var amount = document.getElementById("sellAmountSlider").value / 100;
+
+    sellAmount(amount);
+}
+
+// Sell Amount
 // 1. Check if user is able to purchase the amount specified
 // 2. If you have holdings, sell them
 // 3. Short shares if required
-function sellAmount() {
-    var amount = parseFloat(document.getElementById("sellAmountSlider").value / 100);
+function sellAmount(amount) {
     var commission = 1 - document.getElementById("commissionSlider").value / 10000;
     var length = chart.options.data[0].dataPoints.length;
     var holdingValue = holdings * chart.options.data[0].dataPoints[length-1].y;

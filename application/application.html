@@ -40,11 +40,11 @@
 
 		<!-- Buy and Sell -->
 		<div class="buttons">
-            <div onclick="buyAmount()" class="button">Buy</div>
+            <div onclick="buySlider()" class="button">Buy</div>
 			<input type="range" min="1" max="100000000" value="1000000" class="slider" id="buyAmountSlider">
 			<span id="buyAmountDisplay">$10000 1%</span>
 
-			<div onclick="sellAmount()" class="button">Sell</div>
+			<div onclick="sellSlider()" class="button">Sell</div>
 			<input type="range" min="1" max="100000000" value="1000000" class="slider" id="sellAmountSlider">
             <span id="sellAmountDisplay">$10000 1%</span>
 		</div>
@@ -71,6 +71,10 @@
 		<script src="functions\game.js"></script>
 		<!-- Tests - Not For Production Build -->
 		<script src="tests\tests.js"></script>
+		<script src="tests\test_support.js"></script>
+		<script src="tests\test_chart.js"></script>
 		<script src="tests\test_reusable.js"></script>
+		<script src="tests\test_userInterface.js"></script>
+		<script src="tests\test_stock.js"></script>
 	</body>
 </html>

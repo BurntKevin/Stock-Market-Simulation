@@ -13,5 +13,8 @@ function test_randomNumber() {
 
     // Outputting the success or failure of test
     // Ensuring that the typical growth rate is about 10% per annum
-    console.log(0.09 < compound && compound < 0.11);
+    console.log(
+        "randomNumber",
+        0.09 < compound && compound < 0.11
+    );
 }
