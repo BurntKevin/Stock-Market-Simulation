@@ -38,8 +38,8 @@ To create an interactive game for users to easily try out the stock market in a 
 ### Buy and Sell ###
 * We could have called it long and short but it seems too be too much jargon for the typical person.
 * Allows the user to long and short the stock.
-* Long: Close out shorts (returns margin to cash), long stock if required.
-* Short: Close out longs, short stock if required (continuously takes a margin from cash equal to the current price of a share).
+* Long: Close out shorts (returns margin to cash), long stock if required with cash.
+* Short: Close out longs, short stock if required, maximum short is netWorth = short.
 * Commission is built into the total transaction amount to provide simplicity.
 
 ### Chart ###

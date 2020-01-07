@@ -1,38 +1,7 @@
-// Update chart for next data point
-function updateChart(count) {
-    // Case when count is invalid or unnecessary
-    if (count <= 0) {
-        return;
-    }
-    // Case where the stock has been delisted
-    if (currentPrice() <= 0) {
-        return;
-    }
-
-    // Updating chart with count points
-    for (var i = 0; i < count; i++) {
-        // Giving chart a new point
-        nextPrice();
-    }
-
-    // Resetting variables
-    updateAmountBoughtAtPoint(0);
-
-    // Updating financial status
-    updateDisplayedHoldings();
-    updateDisplayedNetWorth();
-
-    // Updating user interface
-    updateBuySlider();
-    updateSellSlider();
-    chart.render();
-};
-
 // Speed Slider
 document.getElementById("speedSlider").oninput = function() {
     // If running, restart chart so that the new speed is used
     if (running() == "true") {
-        console.log("Hey")
         stopChart();
         runChart();
     }
@@ -70,6 +39,36 @@ function sellSlider() {
     sellAmount(amount);
 }
 
+// Update chart for next data point
+function updateChart(count) {
+    // Case when count is invalid or unnecessary
+    if (count <= 0) {
+        return;
+    }
+    // Case where the stock has been delisted
+    if (currentPrice() <= 0) {
+        return;
+    }
+
+    // Updating chart with count points
+    for (var i = 0; i < count; i++) {
+        // Giving chart a new point
+        nextPrice();
+    }
+
+    // Resetting variables
+    updateAmountBoughtAtPoint(0);
+
+    // Updating financial status
+    updateDisplayedHoldings();
+    updateDisplayedNetWorth();
+
+    // Updating user interface
+    updateBuySlider();
+    updateSellSlider();
+    chart.render();
+};
+
 // Update Buy Slider Information
 function updateBuySlider() {
     // Updating buy amount information
@@ -82,13 +81,13 @@ function updateBuySlider() {
         document.getElementById("buyAmountDisplay").innerHTML = "Insufficient Balance";
     } else if (currentRequestedPercentage <= 100) {
         // Current slider position is a valid amount
-        document.getElementById("buyAmountSlider").max = cash();
+        document.getElementById("buyAmountSlider").max = cash().toFixed(2);
         document.getElementById("buyAmountDisplay").innerHTML = "$" + buy() + " " + currentRequestedPercentage + "%";
     } else {
         // The current amount exceeds the maximum purchase amount, readjust to maximum purchase
-        document.getElementById("buyAmountSlider").max = cash();
-        document.getElementById("buyAmountSlider").value = cash();
-        document.getElementById("buyAmountDisplay").innerHTML = "$" + cash()+ " 100%";
+        document.getElementById("buyAmountSlider").max = cash().toFixed(2);
+        document.getElementById("buyAmountSlider").value = cash().toFixed(2);
+        document.getElementById("buyAmountDisplay").innerHTML = "$" + cash().toFixed(2) + " 100%";
     }
 }
 
@@ -96,20 +95,25 @@ function updateBuySlider() {
 function updateSellSlider() {
     // Updating sell amount information
     var currentRequestedPercentage = Math.round((sell() / short()) * 100);
-    if (short() < 0.01) {
-        // Insufficient balance to make a position
+    if (short() < 0.01 && holdings() > 0) {
+        // Insufficient balance to make a position - currently long
+        document.getElementById("sellAmountSlider").value = 0;
+        document.getElementById("sellAmountSlider").max = 0;
+        document.getElementById("sellAmountDisplay").innerHTML = "Insufficient Balance";
+    } else if (short() < 0.01) {
+        // Insufficient balance to make a position - currently short or no position
         document.getElementById("sellAmountSlider").value = 0;
         document.getElementById("sellAmountSlider").max = 0;
         document.getElementById("sellAmountDisplay").innerHTML = "Overleveraged";
     } else if (currentRequestedPercentage <= 100) {
         // Current slider position is a valid amount
-        document.getElementById("sellAmountSlider").max = short();
+        document.getElementById("sellAmountSlider").max = short().toFixed(2);
         document.getElementById("sellAmountDisplay").innerHTML = "$" + sell() + " " + currentRequestedPercentage + "%";
     } else {
         // The current amount exceeds the maximum purchase amount, readjust to maximum purchase
-        document.getElementById("sellAmountSlider").max = short();
-        document.getElementById("sellAmountSlider").value = short();
-        document.getElementById("sellAmountDisplay").innerHTML = "$" + short() + " 100%";
+        document.getElementById("sellAmountSlider").max = short().toFixed(2);
+        document.getElementById("sellAmountSlider").value = short().toFixed(2);
+        document.getElementById("sellAmountDisplay").innerHTML = "$" + short().toFixed(2) + " 100%";
     }
 }
 

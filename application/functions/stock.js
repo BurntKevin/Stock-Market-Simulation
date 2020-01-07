@@ -3,13 +3,13 @@
 // 2. If you have sell trades currently, close them out
 // 3. Buy more shares if required
 function buyAmount(amount) {
-    if (cash() < buy()) {
+    if (cash() + 0.01 <= amount) {
         // Requested purchase amount exceeds current capital
         notifyUser("Transaction declined! Lack of funds.");
     } else {
         // User is able to purchase
         addAmountBoughtAtPoint(amount * commission());
-        addHoldings(amount / currentPrice() * commission());
+        addHoldingsValue(amount * commission());
         addCash(-amount);
 
         // Updating financial status
@@ -30,16 +30,16 @@ function buyAmount(amount) {
 // 2. If you have holdings, sell them
 // 3. Short shares if required
 function sellAmount(amount) {
-    if (short() < amount && holdings() >= 0) {
+    if (short() + 0.01 <= amount && holdings() >= 0) {
         // Insufficient balance to make the position
         notifyUser("Transaction declined! Lack of funds.");
-    } else if (short() < amount && holdings() < 0) {
+    } else if (short() + 0.01 <= amount && holdings() < 0) {
         // Overleveraged short
         notifyUser("Transaction declined! Overleveraged short.");
     } else {
         // Sufficient balance to make the position
         addAmountBoughtAtPoint(-amount * commission());
-        addHoldings(-amount / currentPrice());
+        addHoldingsValue(-amount);
         addCash(amount * commission());
 
         // Updating financial status
@@ -52,5 +52,26 @@ function sellAmount(amount) {
         updateBuySlider();
         addBuyOrSellMarker();
         chart.render();
+    }
+}
+
+// Generates the next price for the chart
+function nextPrice() {
+    // Generating next price
+    var price = currentPrice() * randomNumber();
+
+    // Checking if the stock should be delisted - if under $0.01
+    if (price < 0.01) {
+        // Delisting stock
+        delistStock();
+    } else {
+        // Stock remains on the exchange
+        addNormalPrice(price);
+    }
+
+    // Checking if the user is not bankrupt - net worth under $0.00
+    if (netWorth() <= 0 && holdings() != 0 && updateCash() != 0) {
+        // User has just turned bankrupt
+        bankruptUser();
     }
 }

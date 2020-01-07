@@ -1,177 +1,155 @@
-// Test updateChart
-function test_updateChart() {
-    // Reset game
-    reset_status();
-
-    // Invalid input, 0
-    var initial_length = chart.options.data[0].dataPoints.length;
-    updateChart(0);
-    var new_length = length = chart.options.data[0].dataPoints.length;
-    console.log(
-        "updatechart",
-        initial_length == new_length
-    )
-
-    // Invalid input, negative
-    var initial_length = chart.options.data[0].dataPoints.length;
-    updateChart(-2);
-    var new_length = length = chart.options.data[0].dataPoints.length;
-    console.log(
-        "updatechart",
-        initial_length == new_length
-    )
-
-    // Adding 1 new point
-    var initial_length = chart.options.data[0].dataPoints.length;
-    updateChart(1);
-    var new_length = length = chart.options.data[0].dataPoints.length;
-    console.log(
-        "updatechart",
-        initial_length == new_length - 1
-    );
-
-    // Adding 5 new points
-    var initial_length = chart.options.data[0].dataPoints.length;
-    updateChart(5);
-    var new_length = length = chart.options.data[0].dataPoints.length;
-    console.log(
-        "updatechart",
-        initial_length == new_length - 5
-    );
-}
-
-// Test buySlider
-function test_buySlider() {
-    // Reset game
-    reset_status();
-    
-    buySlider();
-}
-
 // Test buyAmount
 function test_buyAmount() {
     // Reset game
-    reset_status();
+    initialiseUserInterface();
 
-    // Bankrupt user
-    netWorth = 0;
+    // Insufficient funds to go purchase stock
+    updateCash(0);
     buyAmount(1000);
-    display = document.getElementById("economicStatus").outerHTML;
+    addNormalPrice(100);
     console.log(
-        "buyAmount",
-        display == '<div id="economicStatus" style="text-align: center">You are bankrupt!</div>'
-    )
+        "buyAmount insufficient funds",
+        document.getElementById("economicStatus").innerHTML == "Transaction declined! Lack of funds."
+    );
 
-    // Insufficient funds to go purchase stock from a long position
-    reset_status();
-    currentCash = 0;
-    buyAmount(1000);
-    display = document.getElementById("economicStatus").outerHTML;
+    // Buy From Short
+    initialiseUserInterface();
+    updateCash(1000);
+    updateHoldings(-5);
+    addNormalPrice(100);
+    buyAmount(100);
     console.log(
-        "buyAmount",
-        display == '<div id="economicStatus" style="text-align: center">Transaction declined! Lack of funds.</div>'
-    )
+        "buyAmount buy from short",
+        cash() == 900 &&
+        holdings() == -4.0009999999999994
+    );
 
-    // Insufficient funds to go long from a short
-    reset_status();
-    holdings = -5;
-    currentCash = 0;
-    buyAmount(100000);
-    display = document.getElementById("economicStatus").outerHTML;
+    // Buy From Neutral
+    initialiseUserInterface();
+    updateCash(1000);
+    updateHoldings(0);
+    addNormalPrice(100);
+    buyAmount(100);
     console.log(
-        "buyAmount",
-        display == '<div id="economicStatus" style="text-align: center">Transaction declined! Lack of funds.</div>'
-    )
+        "buyAmount buy from neutral",
+        cash() == 900 &&
+        holdings() == 0.9990000000000001
+    );   
 
-    // Able to purchase, only buy holdings
-    reset_status();
-    holdings = 0;
-    currentCash = 100000;
-    dps.push({
-        x: time,
-        y: 1,
-        markerType: "none",
-    });
-    buyAmount(1000);
+    // Buy from Long
+    initialiseUserInterface();
+    updateCash(1000);
+    updateHoldings(2);
+    addNormalPrice(100);
+    buyAmount(100);
     console.log(
-        "buyAmount",
-        currentCash == 99000 && holdings == 999
-    )
-
-    // Able to purchase, only close shorts
-    reset_status();
-    holdings = -11;
-    currentCash = 0;
-    dps.push({
-        x: time,
-        y: 1,
-        markerType: "none",
-    });
-    buyAmount(10);
-    console.log(
-        "buyAmount",
-        holdings == 1 && currentCash == 9.99
-    )
-
-    // Able to purchase, with closing shorts and cash
-    reset_status();
-    holdings = -10;
-    currentCash = 100;
-    dps.push({
-        x: time,
-        y: 1,
-        markerType: "none",
-    });
-    buyAmount(20);
-    console.log(
-        "buyAmount",
-        holdings == 9.99 && currentCash == 99.99
-    )
-}
-
-// Test sellSlider
-function test_sellSlider() {
-    // Reset game
-    reset_status();
-
-    sellSlider();
+        "buyAmount buy from long",
+        cash() == 900 &&
+        holdings() == 2.9990000000000001
+    );  
 }
 
 // Test sellAmount
 function test_sellAmount() {
     // Reset game
-    reset_status();
+    initialiseUserInterface();
+
+    // Insufficient funds to go short from long
+    updateCash(0);
+    updateHoldings(1);
+    addNormalPrice(0.005);
+    sellAmount(100);
+    console.log(
+        "sellAmount insufficient funds from long",
+        document.getElementById("economicStatus").innerHTML == "Transaction declined! Lack of funds."
+    );
+
+    // Insufficient funds to go short from neutral
+    updateCash(0);
+    updateHoldings(0);
+    addNormalPrice(100);
+    sellAmount(100);
+    console.log(
+        "sellAmount insufficient funds from neutral",
+        document.getElementById("economicStatus").innerHTML == "Transaction declined! Lack of funds."
+    );
+
+    // Overleveraged short
+    updateCash(0);
+    updateHoldings(-1);
+    addNormalPrice(100);
+    sellAmount(100);
+    console.log(
+        "sellAmount overleveraged",
+        document.getElementById("economicStatus").innerHTML == "Transaction declined! Overleveraged short."
+    );
+
+    // Sell from short
+    initialiseUserInterface();
+    updateCash(2000);
+    updateHoldings(-5);
+    addNormalPrice(100);
+    sellAmount(100);
+    console.log(
+        "sellAmount sell from short",
+        cash() == 2099.9 &&
+        holdings() == -6
+    );
+
+    // Sell from neutral
+    initialiseUserInterface();
+    updateCash(2000);
+    updateHoldings(0);
+    addNormalPrice(100);
+    sellAmount(100);
+    console.log(
+        "sellAmount sell from neutral",
+        cash() == 2099.9 &&
+        holdings() == -1
+    );
+
+    // Sell from long
+    initialiseUserInterface();
+    updateCash(2000);
+    updateHoldings(5);
+    addNormalPrice(100);
+    sellAmount(100);
+    console.log(
+        "sellAmount sell from short",
+        cash() == 2099.9 &&
+        holdings() == 4
+    );
+}
+
+// Test nextPrice
+function test_nextPrice() {
+    // Resetting
+    initialiseUserInterface();
+
+    // Stock continues
+    nextPrice();
+    console.log(
+        "nextPrice continue",
+        document.getElementById("economicStatus").innerHTML == ""
+    );
+
+    // Delisted stock
+    initialiseUserInterface();
+    addNormalPrice(0.0005);
+    nextPrice();
+    console.log(
+        "nextPrice delisted",
+        document.getElementById("economicStatus").innerHTML == "The company has been delisted!"
+    );
 
     // Bankrupt user
-    netWorth = 0;
-    sellAmount(1000);
-    display = document.getElementById("economicStatus").outerHTML;
+    initialiseUserInterface();
+    updateCash(2000);
+    updateHoldings(-10);
+    addNormalPrice(1000);
+    nextPrice();
     console.log(
-        "sellAmount",
-        display == '<div id="economicStatus" style="text-align: center">You are bankrupt!</div>'
-    )
-
-    // Insufficient funds to short from a long position
-    reset_status();
-    holdings = 1;
-    currentCash = 0;
-    dps.push({
-        x: time,
-        y: 1,
-        markerType: "none",
-    });
-    sellAmount(1000);
-    display = document.getElementById("economicStatus").outerHTML;
-    console.log(
-        "sellAmount",
-        display == '<div id="economicStatus" style="text-align: center">Transaction declined! Lack of funds.</div>'
-    )
-
-    // Insufficient funds to short from a currently short position
-
-
-    // Only requires selling holdings
-
-    // Requires selling holdings and using cash
-
+        "nextPrice bankrupt",
+        document.getElementById("economicStatus").innerHTML == "You are now bankrupt! Your assets have been forcefully taken."
+    );
 }

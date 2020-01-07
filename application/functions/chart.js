@@ -1,4 +1,4 @@
-// Run and Stop Button
+// Run and stop button
 function runOrStopChart() {
     if (running() == "false") {
         // Stopping chart if currently stopped
@@ -11,7 +11,7 @@ function runOrStopChart() {
     }
 }
 
-// Run Chart
+// Run chart
 function runChart() {
     if (running() == "false") {
         // Chart is not currently running
@@ -22,7 +22,7 @@ function runChart() {
     }
 }
 
-// Stop Chart
+// Stop chart
 function stopChart() {
     if (running() == "true") {
         // Chart is currently running
@@ -38,14 +38,14 @@ function addNormalPrice(price) {
 
 // Adds a company bankrupt price point onto chart
 function addCompanyBankruptPrice() {
-    addNextPrice(0, "cross", "black");
+    addNextPrice(0, "black", "cross");
 }
 
 // Adds the next price on the chart
 function addNextPrice(price, markerColor, markerType) {
     chartStatus.dps.push({
         x: currentTime(),
-        y: price,
+        y: parseFloat(price.toFixed(2)),
         markerColor: markerColor,
         markerType: markerType,
     });
@@ -56,41 +56,21 @@ function updateCurrentPriceStyle(markerColor, markerType) {
     chart.options.data[0].dataPoints[currentTime() - 1] = {
         x: currentTime() - 1,
         y: currentPrice(),
-        markerType: markerColor,
-        markerColor: markerType
+        markerColor: markerColor,
+        markerType: markerType
     };
-}
-
-// Generates the next price for the chart
-function nextPrice() {
-    // Generating next price
-    var price = currentPrice() * randomNumber();
-
-    // Checking if the stock should be delisted - if under $0.01
-    if (price < 0.01) {
-        // Delisting stock
-        delistStock();
-    } else {
-        // Stock remains on the exchange
-        addNormalPrice(price);
-    }
-
-    // Checking if the user is not bankrupt - net worth under $0.00
-    if (netWorth() <= 0 && holdings() != 0 && updateCash() != 0) {
-        // User has just turned bankrupt
-        bankruptUser();
-    }
 }
 
 // Delist a stock
 function delistStock() {
-    // Stock can no longer have more prices, inform the user and remove run button to remove confusion
+    // Updating user - no more prices, holdings worthless
     stopChart();
     notifyUser("The company has been delisted!");
     document.getElementById("runningStatus").innerHTML = "";
     updateHoldings(0);
 
-    addCompanyBankruptPrice(price);
+    // Updating chart
+    addCompanyBankruptPrice();
 }
 
 // User is bankrupt
@@ -107,15 +87,14 @@ function bankruptUser() {
 
 // Add buy or sell marker at a point depending on net purchase
 function addBuyOrSellMarker() {
-    // Calculating marker
     if (amountBoughtAtPoint() < 0) {
         // Net short position
-        updateCurrentPriceStyle("triangle", "red");
+        updateCurrentPriceStyle("red", "triangle");
     } else if (amountBoughtAtPoint() > 0) {
         // Net long position
-        updateCurrentPriceStyle("triangle", "green")
+        updateCurrentPriceStyle("green", "triangle")
     } else {
         // Net zero position
-        updateCurrentPriceStyle("triangle", "brown")
+        updateCurrentPriceStyle("brown", "triangle")
     }
 }

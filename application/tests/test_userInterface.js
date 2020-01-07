@@ -1,365 +1,309 @@
-// Test updateCurrentCash
-function test_updateCurrentCash() {
+// Test updateChart
+function test_updateChart() {
     // Reset game
-    reset_status();
+    initialiseUserInterface();
 
-    // Current cash is positive
-    currentCash = 5000;
-    updateCurrentCash();
-    displayedCash = document.getElementById("currentCash").outerHTML;
+    // Invalid input, 0
+    var initial_length = chart.options.data[0].dataPoints.length;
+    updateChart(0);
     console.log(
-        "updateCurrentCash",
-        displayedCash == '<span id="currentCash">$5000.00</span>'
+        "updatechart 0 input",
+        initial_length == chart.options.data[0].dataPoints.length
     );
 
-    // Current cash is 0
-    reset_status();
-    currentCash = 0;
-    updateCurrentCash();
-    displayedCash = document.getElementById("currentCash").outerHTML;
+    // Invalid input, negative
+    initialiseUserInterface();
+    var initial_length = chart.options.data[0].dataPoints.length;
+    updateChart(-2);
     console.log(
-        "updateCurrentCash",
-        displayedCash == '<span id="currentCash">$0.00</span>'
+        "updatechart negative input",
+        initial_length == chart.options.data[0].dataPoints.length
     );
 
-    // Current cash is not a standard number
-    reset_status();
-    currentCash = 42.146214214;
-    updateCurrentCash();
-    displayedCash = document.getElementById("currentCash").outerHTML;
+    // Adding 1 new point
+    initialiseUserInterface();
+    var initial_length = chart.options.data[0].dataPoints.length;
+    updateChart(1);
     console.log(
-        "updateCurrentCash",
-        displayedCash == '<span id="currentCash">$42.15</span>'
-    );
-}
-
-// Test updateHoldings
-function test_updateHoldings() {
-    // Reset game
-    reset_status();
-
-    // Getting price of a single share
-    var length = chart.options.data[0].dataPoints.length;
-    var price = chart.options.data[0].dataPoints[length-1].y.toFixed(2);
-
-    // Holdings is positive
-    holdings = 100;
-    value = (price * holdings).toFixed(2);
-    updateHoldings();
-    displayedCash = document.getElementById("holdings").outerHTML;
-    console.log(
-        "updateHoldings",
-        displayedCash == '<span id="holdings">100.00, $' + value + '</span>'
+        "updatechart adding 1 point",
+        initial_length + 1 == chart.options.data[0].dataPoints.length
     );
 
-    // Holdings is 0
-    holdings = 0;
-    updateHoldings();
-    displayedCash = document.getElementById("holdings").outerHTML;
+    // Adding 5 new points
+    initialiseUserInterface();
+    var initial_length = chart.options.data[0].dataPoints.length;
+    updateChart(5);
     console.log(
-        "updateHoldings",
-        displayedCash == '<span id="holdings">0.00, $0.00</span>'
+        "updatechart adding 5 points",
+        initial_length + 5 == chart.options.data[0].dataPoints.length
     );
-
-    // Holdings is positive
-    holdings = -100;
-    value = (price * holdings).toFixed(2);
-    updateHoldings();
-    displayedCash = document.getElementById("holdings").outerHTML;
-    console.log(
-        "updateHoldings",
-        displayedCash == '<span id="holdings">-100.00, $' + value + '</span>'
-    );
-
-    // Holdings value is a non-standard accounting number
-    holdings = 25.215972;
-    value = (price * holdings).toFixed(2);
-    updateHoldings();
-    displayedCash = document.getElementById("holdings").outerHTML;
-    console.log(
-        "updateHoldings",
-        displayedCash == '<span id="holdings">25.22, $' + value + '</span>'
-    );
-}
-
-// Test updateNetWorth
-function test_updateNetWorth() {
-    // Reset game
-    reset_status();
-
-    // Testing long positions and not bankrupt
-    holdings = 100;
-
-    // Testing long position and bankrupt
-
-    // Testing short positions and not bankrupt
-    
-    // Testing short positions and bankrupt
-
-    // Testing no position and not bankrupt
-
-    // Testing no position and bankrupt
-
-    console.log("Todo: test_updateNetWorth");
 }
 
 // Test updateBuySlider
 function test_updateBuySlider() {
     // Reset game
-    reset_status();
+    initialiseUserInterface();
 
     // Long position and insufficient balance to make a position
-    holdings = 5;
-    currentCash = 0.0085;
+    updateHoldings(5);
+    updateCash(0.0085);
     updateBuySlider();
-
-    display = document.getElementById("buyAmountDisplay").outerHTML
     console.log(
-        "updateBuySlider",
-        display == '<span id="buyAmountDisplay">Insufficient Balance</span>'
+        "updateBuySlider insufficient balance long",
+        document.getElementById("buyAmountDisplay").innerHTML == "Insufficient Balance" &&
+        document.getElementById("buyAmountSlider").value == "0" &&
+        document.getElementById("buyAmountSlider").max == "0"
     );
 
     // Long position and current slider position is a valid amount
-    reset_status();
-    holdings = 5;
-    currentCash = 5;
-    document.getElementById("buyAmountSlider").value = 200;
-    document.getElementById("buyAmountSlider").max = 500;
+    initialiseUserInterface();
+    updateHoldings(5);
+    updateCash(5);
+    document.getElementById("buyAmountSlider").value = 2;
     updateBuySlider();
-
-    display = document.getElementById("buyAmountDisplay").outerHTML
     console.log(
-        "updateBuySlider",
-        display == '<span id="buyAmountDisplay">$2 40%</span>'
+        "updateBuySlider long position and slider valid",
+        document.getElementById("buyAmountDisplay").innerHTML == "$2 40%" &&
+        document.getElementById("buyAmountSlider").max == 5
     );
     
     // Long position and current slider position exceeds current cash
-    reset_status();
-    holdings = 5;
-    currentCash = 5;
+    initialiseUserInterface();
+    updateHoldings(5);
+    updateCash(5);
     document.getElementById("buyAmountSlider").value = 1000;
     updateBuySlider();
-
-    amount = document.getElementById("buyAmountSlider").value;
-    display = document.getElementById("buyAmountDisplay").outerHTML;
     console.log(
-        "updateBuySlider",
-        amount == 500 && display == '<span id="buyAmountDisplay">$5 100%</span>'
+        "updateBuySlider long position and slider invalid",
+        document.getElementById("buyAmountDisplay").innerHTML == "$5.00 100%" &&
+        document.getElementById("buyAmountSlider").max == "5.00" &&
+        document.getElementById("buyAmountSlider").value == "5"
     );
 
     // Short position and insufficient balance
-    reset_status();
-    holdings = -1;
-    currentCash = 0;
-    dps.push({
-        x: time,
-        y: 0.005,
-        markerType: "none",
-    });
+    initialiseUserInterface();
+    updateHoldings(-5);
+    updateCash(0);
+    addNormalPrice(0.005);
     updateBuySlider();
-
-    display = document.getElementById("buyAmountDisplay").outerHTML
     console.log(
-        "updateBuySlider",
-        display == '<span id="buyAmountDisplay">Insufficient Balance</span>'
+        "updateBuySlider short position and insufficient balance",
+        document.getElementById("buyAmountDisplay").innerHTML == "Insufficient Balance" &&
+        document.getElementById("buyAmountSlider").value == 0 &&
+        document.getElementById("buyAmountSlider").max == 0
     );
 
     // Short position and valid amount
-    reset_status();
-    holdings = -5;
-    currentCash = 5;
-    dps.push({
-        x: time,
-        y: 1,
-        markerType: "none",
-    });
-    document.getElementById("buyAmountSlider").value = 100;
+    initialiseUserInterface();
+    updateHoldings(-5);
+    updateCash(5);
+    addNormalPrice(1)
+    document.getElementById("buyAmountSlider").value = 1;
     updateBuySlider();
-
     display = document.getElementById("buyAmountDisplay").outerHTML
     console.log(
-        "updateBuySlider",
-        display == '<span id="buyAmountDisplay">$1 10%</span>'
+        "updateBuySlider short position and valid slider position",
+        document.getElementById("buyAmountDisplay").innerHTML == "$1 20%" &&
+        document.getElementById("buyAmountSlider").value == 1 &&
+        document.getElementById("buyAmountSlider").max == 5
     );
 
     // Short position and invalid amount
-    reset_status();
-    holdings = -5;
-    currentCash = 5;
-    dps.push({
-        x: time,
-        y: 1,
-        markerType: "none",
-    });
-    document.getElementById("buyAmountSlider").value = 10000;
+    initialiseUserInterface();
+    updateHoldings(-5);
+    updateCash(5);
+    addNormalPrice(1)
+    document.getElementById("buyAmountSlider").value = 100;
     updateBuySlider();
-
-    display = document.getElementById("buyAmountDisplay").outerHTML
     console.log(
-        "updateBuySlider",
-        display == '<span id="buyAmountDisplay">$10 100%</span>'
+        "updateBuySlider short position and invalid slider position",
+        document.getElementById("buyAmountDisplay").innerHTML == "$5.00 100%" &&
+        document.getElementById("buyAmountSlider").value == "5" &&
+        document.getElementById("buyAmountSlider").max == "5.00"
     );
 }
 
 // Test updateSellSlider
 function test_updateSellSlider() {
     // Reset game
-    reset_status();
+    initialiseUserInterface();
 
     // Long and insufficient balance
-    holdings = 1;
-    currentCash = 0;
-    dps.push({
-        x: time,
-        y: 0.005,
-        markerType: "none"
-    });
+    updateHoldings(1);
+    updateCash(0);
+    addNormalPrice(0.0005);
     updateSellSlider();
-
-    display = document.getElementById("sellAmountDisplay").outerHTML;
     console.log(
-        "updateSellSlider",
-        display == '<span id="sellAmountDisplay">Insufficient Balance</span>'
+        "updateSellSlider long and insufficient balance",
+        document.getElementById("sellAmountDisplay").innerHTML == "Insufficient Balance" &&
+        document.getElementById("sellAmountSlider").value == 0 &&
+        document.getElementById("sellAmountSlider").max == 0
     );
 
     // Long and valid amount
-    reset_status();
-    holdings = 1;
-    currentCash = 3;
-    dps.push({
-        x: time,
-        y: 1,
-        markerType: "none",
-    });
-    document.getElementById("sellAmountSlider").value = 3.5 * 100;
+    initialiseUserInterface();
+    updateHoldings(1);
+    updateCash(3);
+    addNormalPrice(1);
+    document.getElementById("sellAmountSlider").value = 3;
     updateSellSlider();
-
-    display = document.getElementById("sellAmountDisplay").outerHTML
     console.log(
-        "updateSellSlider",
-        display == '<span id="sellAmountDisplay">$3.5 88%</span>'
+        "updateSellSlider long and valid slider",
+        document.getElementById("sellAmountDisplay").innerHTML == "$3 60%" &&
+        document.getElementById("sellAmountSlider").max == "5.00"
     );
 
     // Long and invalid amount
-    reset_status();
-    holdings = 1;
-    currentCash = 3;
-    dps.push({
-        x: time,
-        y: 1,
-        markerType: "none",
-    });
-    document.getElementById("sellAmountSlider").value = 3.5 * 100;
+    initialiseUserInterface();
+    updateHoldings(1);
+    updateCash(3);
+    addNormalPrice(1);
+    document.getElementById("sellAmountSlider").value = 6;
     updateSellSlider();
-
-    display = document.getElementById("sellAmountDisplay").outerHTML
     console.log(
-        "updateSellSlider",
-        display == '<span id="sellAmountDisplay">$3.5 88%</span>'
+        "updateSellSlider long and invalid slider",
+        document.getElementById("sellAmountDisplay").innerHTML == "$5.00 100%" &&
+        document.getElementById("sellAmountSlider").max == "5.00"
     );
 
     // Short and insufficient balance
-    holdings = -1;
-    currentCash = 0;
-    dps.push({
-        x: time,
-        y: 1,
-        markerType: "none"
-    });
+    initialiseUserInterface();
+    updateHoldings(-1);
+    updateCash(0);
+    addNormalPrice(1);
     updateSellSlider();
-
-    display = document.getElementById("sellAmountDisplay").outerHTML;
     console.log(
-        "updateSellSlider",
-        display == '<span id="sellAmountDisplay">Insufficient Balance</span>'
+        "updateSellSlider short and insufficient balance",
+        document.getElementById("sellAmountDisplay").innerHTML == "Overleveraged" &&
+        document.getElementById("sellAmountSlider").value == 0 &&
+        document.getElementById("sellAmountSlider").max == "0"
     );
 
     // Short and valid amount
-    reset_status();
-    holdings = -1;
-    currentCash = 5;
-    dps.push({
-        x: time,
-        y: 1,
-        markerType: "none",
-    });
-    document.getElementById("sellAmountSlider").value = 3 * 100;
+    initialiseUserInterface();
+    updateHoldings(-1);
+    updateCash(5);
+    addNormalPrice(1);
+    document.getElementById("sellAmountSlider").value = 2;
     updateSellSlider();
-
-    display = document.getElementById("sellAmountDisplay").outerHTML
     console.log(
-        "updateSellSlider",
-        display == '<span id="sellAmountDisplay">$3 60%</span>'
+        "updateSellSlider short and valid slider amount",
+        document.getElementById("sellAmountDisplay").innerHTML == "$2 67%" &&
+        document.getElementById("sellAmountSlider").max == "3.00"
     );
 
     // Short and invalid amount
-    reset_status();
-    holdings = -1;
-    currentCash = 1;
-    dps.push({
-        x: time,
-        y: 1,
-        markerType: "none",
-    });
-    document.getElementById("sellAmountSlider").value = 3 * 100;
+    initialiseUserInterface();
+    updateHoldings(-1);
+    updateCash(5);
+    addNormalPrice(1);
+    document.getElementById("sellAmountSlider").value = 3;
     updateSellSlider();
-
-    display = document.getElementById("sellAmountDisplay").outerHTML
     console.log(
-        "updateSellSlider",
-        display == '<span id="sellAmountDisplay">$1 100%</span>'
+        "updateSellSlider short and invalid slider amount",
+        document.getElementById("sellAmountDisplay").innerHTML == "$3 100%" &&
+        document.getElementById("sellAmountSlider").max == "3.00"
     );
 }
 
-// Test readjustMargin
-function test_readjustMargin() {
+// Test updateDisplayedCash
+function test_updateDisplayedCash() {
     // Reset game
-    reset_status();
+    initialiseUserInterface();
 
-    // Currently not in a short position
-    readjustMargin();
+    // Current cash is positive
+    updateCash(5000);
+    updateDisplayedCash();
     console.log(
-        "readjustMargin",
-        currentCash == 1000000
+        "updateDisplayedCash positive number",
+        document.getElementById("cash").innerHTML == "$5000.00"
     );
 
-    // Currently in a short position, position increased in value
-    reset_status();
-    holdings = -10;
-    dps.push({
-        x: time,
-        y: 1,
-        markerType: "none",
-    });
-    time++;
-    dps.push({
-        x: time,
-        y: 2,
-        markerType: "none",
-    });
-    readjustMargin();
+    // Current cash is 0
+    initialiseUserInterface();
+    updateCash(0);
+    updateDisplayedCash();
     console.log(
-        "readjustMargin",
-        currentCash == 999990
-    )
+        "updateDisplayedCash 0 number",
+        document.getElementById("cash").innerHTML == "$0.00"
+    );
 
-    // Currently in a short position, position decreased in value
-    reset_status();
-    holdings = -10;
-    dps.push({
-        x: time,
-        y: 2,
-        markerType: "none",
-    });
-    time++;
-    dps.push({
-        x: time,
-        y: 1,
-        markerType: "none",
-    });
-    readjustMargin();
+    // Current cash is not a standard number
+    initialiseUserInterface();
+    updateCash(2321.5216);
+    updateDisplayedCash();
     console.log(
-        "readjustMargin",
-        currentCash == 1000010
-    )
+        "updateDisplayedCash non-standard number",
+        document.getElementById("cash").innerHTML == "$2321.52"
+    );
+}
+
+// Test updateDisplayedHoldings
+function test_updateDisplayedHoldings() {
+    // Reset game
+    initialiseUserInterface();
+
+    // Holdings is positive
+    updateHoldings(5000);
+    addNormalPrice(1);
+    updateDisplayedHoldings();
+    console.log(
+        "updateDisplayedHoldings positive number",
+        document.getElementById("holdings").innerHTML == "5000.00, $5000.00"
+    );
+
+    // Current holdings is 0
+    initialiseUserInterface();
+    updateHoldings(0);
+    addNormalPrice(1);
+    updateDisplayedHoldings();
+    console.log(
+        "updateDisplayedHoldings 0 number",
+        document.getElementById("holdings").innerHTML == "0.00, $0.00"
+    );
+
+    // Current holdings is not a standard number
+    initialiseUserInterface();
+    updateHoldings(23.52);
+    addNormalPrice(1);
+    updateDisplayedHoldings();
+    console.log(
+        "updateDisplayedHoldings non-standard number",
+        document.getElementById("holdings").innerHTML == "23.52, $23.52"
+    );
+}
+
+// Test updateDisplayedNetWorth
+function test_updateDisplayedNetWorth() {
+    // Reset game
+    initialiseUserInterface();
+
+    // Net worth is positive
+    updateHoldings(0);
+    updateCash(5000);
+    updateDisplayedNetWorth();
+    console.log(
+        "updateDisplayedNetWorth positive number",
+        document.getElementById("netWorth").innerHTML == "$5000.00"
+    );
+
+    // Net worth is 0
+    initialiseUserInterface();
+    updateHoldings(0);
+    updateCash(0);
+    updateDisplayedNetWorth();
+    console.log(
+        "updateDisplayedNetWorth 0 number",
+        document.getElementById("netWorth").innerHTML == "$0.00"
+    );
+
+    // Net worth is not a standard number
+    initialiseUserInterface();
+    updateHoldings(0);
+    updateCash(2321.52);
+    updateDisplayedNetWorth();
+    console.log(
+        "updateDisplayedNetWorth non-standard number",
+        document.getElementById("netWorth").innerHTML == "$2321.52"
+    );
 }

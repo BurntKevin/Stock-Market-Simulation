@@ -20,7 +20,7 @@ function cash() {
 
 // Updates cash
 function updateCash(amount) {
-    chartStatus.cash = amount;
+    financialStatus.cash = amount;
 }
 
 // Add amount to cash
@@ -49,6 +49,11 @@ function addHoldings(amount) {
 // If short, return short amount and if long, return long amount
 function holdingsValue() {
     return Math.abs(holdings()) * currentPrice();
+}
+
+// Adds amount to holdingsValue
+function addHoldingsValue(amount) {
+    addHoldings(amount / currentPrice());
 }
 
 // Returns the commission
@@ -120,18 +125,24 @@ function updateRunning(boolean) {
     chartStatus.running = boolean;
 }
 
-// Maximum short finder
+// Maximum short finder - 1x leverage where netWorth = short
 function short() {
     if (holdings() > 0) {
-        // There are holdings to sell, cash obtained from sold holdings and original cash
-        return cash() + holdingsValue() + holdingsValue() * commission();
+        // If long, we can close out long positions and use cash obtained from
+        // selling and from savings to short
+        // Obtaining maximum possible cash right before short
+        var maxCash = cash() + holdingsValue() * commission();
+        // Shorting using cash
+        var maxShort = holdingsValue() + maxCash / (2 - commission());
     } else if (holdings() < 0) {
-        // Currently in a short
-        return cash() - holdingsValue() * 2;
+        // Shorting using cash
+        var maxShort = (cash() - 2 * holdingsValue()) / (2 - commission());
     } else {
-        // Currently in a net 0 position
-        return cash();
+        // Shorting using cash
+        var maxShort = cash() / (2 - commission());
     }
+
+    return maxShort;
 }
 
 // Sends a message to the user
@@ -145,4 +156,14 @@ function removeEconomicStatus() {
     setTimeout(function() {
         document.getElementById("economicStatus").innerHTML = "";
     }, 5000);
+}
+
+// Returns current marker colour
+function currentMarkerColor() {
+    return chart.options.data[0].dataPoints[currentTime() - 1].markerColor;
+}
+
+// Returns current marker type
+function currentMarkerType() {
+    return chart.options.data[0].dataPoints[currentTime() - 1].markerType;
 }

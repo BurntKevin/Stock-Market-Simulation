@@ -14,7 +14,7 @@
 		<!-- Settings -->
         <div class="buttons">
             <div onclick="runOrStopChart()" class="button">
-                <span id="runningStatus">Run</span>
+                <span id="runningStatus"></span>
             </div>
 
             Speed
@@ -59,22 +59,22 @@
 		<script src="styling\canvas.js"></script>
 		<!-- Generic Functions -->
 		<script src="functions\reusable.js"></script>
-		<!-- Settings and Constants For Game -->
-		<script src="functions\settings.js"></script>
 		<!-- Importing General Chart Functions -->
 		<script src="functions\chart.js"></script>
 		<!-- Importing User Interface -->
 		<script src="functions\userInterface.js"></script>
 		<!-- Importing Chart Into Stock Chart -->
 		<script src="functions\stock.js"></script>
-		<!-- Starting Game -->
-		<script src="functions\game.js"></script>
+		<!-- Settings and Constants For Game -->
+		<script src="functions\settings.js"></script>
+		<!-- Initialise Game -->
+		<script src="application.js"></script>
 		<!-- Tests - Not For Production Build -->
 		<script src="tests\tests.js"></script>
-		<script src="tests\test_support.js"></script>
+		<script src="tests\test_settings.js"></script>
 		<script src="tests\test_chart.js"></script>
 		<script src="tests\test_reusable.js"></script>
-		<script src="tests\test_userInterface.js"></script>
 		<script src="tests\test_stock.js"></script>
+		<script src="tests\test_userInterface.js"></script>
 	</body>
 </html>
