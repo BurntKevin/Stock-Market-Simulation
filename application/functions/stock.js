@@ -70,7 +70,7 @@ function nextPrice() {
     }
 
     // Checking if the user is not bankrupt - net worth under $0.00
-    if (netWorth() <= 0 && holdings() != 0 && updateCash() != 0) {
+    if (netWorth() <= 0 && holdings() != 0) {
         // User has just turned bankrupt
         bankruptUser();
     }

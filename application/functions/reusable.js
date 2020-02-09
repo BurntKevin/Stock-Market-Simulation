@@ -38,7 +38,6 @@ function updateHoldings(amount) {
     financialStatus.holdings = amount;
 }
 
-
 // Add amount to holdings
 function addHoldings(amount) {
     financialStatus.holdings += amount;
