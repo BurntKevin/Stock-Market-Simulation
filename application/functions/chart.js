@@ -77,6 +77,7 @@ function delistStock() {
 function bankruptUser() {
     // Updating financial status
     updateCash(0);
+    updateDisplayedCash();
     updateHoldings(0);
 
     // Updating user interface
@@ -92,9 +93,9 @@ function addBuyOrSellMarker() {
         updateCurrentPriceStyle("red", "triangle");
     } else if (amountBoughtAtPoint() > 0) {
         // Net long position
-        updateCurrentPriceStyle("green", "triangle")
+        updateCurrentPriceStyle("green", "triangle");
     } else {
         // Net zero position
-        updateCurrentPriceStyle("brown", "triangle")
+        updateCurrentPriceStyle("brown", "triangle");
     }
 }
